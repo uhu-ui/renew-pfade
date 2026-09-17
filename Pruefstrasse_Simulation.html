@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ReNew IT – Prüfstraße: Simulation</title>
+<style>
+:root{--blau:#075A7B;--dunkel:#0b2733;--gruen:#6B9F35}
+*{box-sizing:border-box}
+body{font-family:Arial,Helvetica,sans-serif;margin:0;background:#0b1d26;color:#e8eef1;min-height:100vh}
+header{background:var(--blau);color:#fff;padding:10px 20px;display:flex;align-items:center;gap:16px}
+.logo-kopf{height:40px;width:auto;flex:none}
+header h1{margin:0;font-size:19px;flex:1}
+main{max-width:1000px;margin:0 auto;padding:14px}
+.wrap{background:#0e2530;border:1px solid #1d3947;border-radius:12px;padding:10px;box-shadow:0 10px 40px rgba(0,0,0,.45)}
+canvas{display:block;width:100%;height:auto;border-radius:8px}
+.bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px}
+button{font:inherit;padding:9px 16px;border:1px solid #2c5568;background:#123240;color:#dfe9ee;border-radius:8px;cursor:pointer}
+button:hover{background:#17404f}
+button.primary{background:var(--gruen);border-color:var(--gruen);color:#0b1d26;font-weight:bold}
+button.chip.active{background:#dfe9ee;color:#0b1d26;border-color:#dfe9ee}
+.stat{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+.s{background:#123240;border:1px solid #2c5568;border-radius:8px;padding:8px 12px;font-size:13.5px}
+.s b{font-size:15px}
+.s.gr b{color:#7fd34e}.s.or b{color:#ffd75e}.s.rt b{color:#ff7a6e}
+</style>
+</head>
+<body>
+<header>
+ <img class="logo-kopf" alt="ReNew IT GmbH" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIgogICAgIHdpZHRoPSIxNjAwIgogICAgIGhlaWdodD0iNjAwIgogICAgIHZpZXdCb3g9IjAgMCAxNjAwIDYwMCIKICAgICByb2xlPSJpbWciCiAgICAgYXJpYS1sYWJlbGxlZGJ5PSJ0aXRsZSBkZXNjIj4KICA8dGl0bGUgaWQ9InRpdGxlIj5SZU5ldyBJVCBHbWJIIExvZ288L3RpdGxlPgogIDxkZXNjIGlkPSJkZXNjIj5QZXRyb2xibGF1ZXMgdW5kIG1vb3NncsO8bmVzIExvZ28gbWl0IEtyZWlzbGF1ZnBmZWlsZW4sIExhcHRvcCB1bmQgTGVpdGVyYmFobmVuLjwvZGVzYz4KCiAgCgogIDwhLS0gS3JlaXNsYXVmc3ltYm9sIC0tPgogIDxwYXRoIGQ9Ik0xNDUgMjgwCiAgICAgICAgICAgQTE3OCAxNzggMCAwIDEgNDMwIDE2MiIKICAgICAgICBmaWxsPSJub25lIgogICAgICAgIHN0cm9rZT0iIzZiOWYzNSIKICAgICAgICBzdHJva2Utd2lkdGg9IjQyIgogICAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogIDxwYXRoIGQ9Ik00MTQgMTExIEw0OTMgMTg0IEwzOTEgMjA1IFoiIGZpbGw9IiM2YjlmMzUiLz4KCiAgPHBhdGggZD0iTTQ2NSAzMTkKICAgICAgICAgICBBMTc4IDE3OCAwIDAgMSAxODAgNDM4IgogICAgICAgIGZpbGw9Im5vbmUiCiAgICAgICAgc3Ryb2tlPSIjZmZmZmZmIgogICAgICAgIHN0cm9rZS13aWR0aD0iNDIiCiAgICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPHBhdGggZD0iTTE5NyA0ODkgTDExOCA0MTYgTDIyMCAzOTUgWiIgZmlsbD0iI2ZmZmZmZiIvPgoKICA8IS0tIExhcHRvcCAtLT4KICA8cmVjdCB4PSIyMjAiIHk9IjIwNSIgd2lkdGg9IjIwNSIgaGVpZ2h0PSIxNDUiIHJ4PSIxMCIKICAgICAgICBmaWxsPSJub25lIiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iMjAiLz4KICA8cGF0aCBkPSJNMTk3IDM4MCBINDQ3IEw0NzkgNDE4IFE0ODQgNDI2IDQ3MiA0MjYgSDE3MyBRMTYxIDQyNiAxNjYgNDE4IFoiCiAgICAgICAgZmlsbD0iI2ZmZmZmZiIvPgogIDxwYXRoIGQ9Ik0yODYgNDA1IEgzNTQgTDM2NSA0MTkgSDI3NSBaIiBmaWxsPSJub25lIi8+CgogIDwhLS0gTGVpdGVyYmFobmVuIC0tPgogIDxwYXRoIGQ9Ik0zMTMgMjc5IEgzODYgTDQyNyAyMzYgSDQ5NSIKICAgICAgICBmaWxsPSJub25lIiBzdHJva2U9IiM2YjlmMzUiIHN0cm9rZS13aWR0aD0iMTMiCiAgICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+CiAgPHBhdGggZD0iTTM1MCAzMTUgSDQyNiBMNDU5IDI4MSBINTQ4IgogICAgICAgIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzZiOWYzNSIgc3Ryb2tlLXdpZHRoPSIxMyIKICAgICAgICBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KICA8cGF0aCBkPSJNMzg5IDM1MCBINDU1IEw0ODUgMzI2IEg1MTEiCiAgICAgICAgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNmI5ZjM1IiBzdHJva2Utd2lkdGg9IjEzIgogICAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgogIDxjaXJjbGUgY3g9IjUxMyIgY3k9IjIzNiIgcj0iMTUiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzZiOWYzNSIgc3Ryb2tlLXdpZHRoPSIxMSIvPgogIDxjaXJjbGUgY3g9IjU2NiIgY3k9IjI4MSIgcj0iMTUiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzZiOWYzNSIgc3Ryb2tlLXdpZHRoPSIxMSIvPgogIDxjaXJjbGUgY3g9IjUyOSIgY3k9IjMyNiIgcj0iMTUiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzZiOWYzNSIgc3Ryb2tlLXdpZHRoPSIxMSIvPgoKICA8IS0tIFdvcnRtYXJrZSAtLT4KICA8ZyBmb250LWZhbWlseT0iJ0RlamFWdSBTYW5zJywgQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtd2VpZ2h0PSI3MDAiPgogICAgPHRleHQgeD0iNTg1IiB5PSIzNDUiIGZvbnQtc2l6ZT0iMTc4IiBmaWxsPSIjZmZmZmZmIj5SZTwvdGV4dD4KICAgIDx0ZXh0IHg9Ijc5NSIgeT0iMzQ1IiBmb250LXNpemU9IjE3OCIgZmlsbD0iIzZiOWYzNSI+TmV3PC90ZXh0PgogICAgPHRleHQgeD0iMTI2NSIgeT0iMzQ1IiBmb250LXNpemU9IjE3OCIgZmlsbD0iI2ZmZmZmZiI+SVQ8L3RleHQ+CiAgPC9nPgogIDx0ZXh0IHg9IjEyNjgiIHk9IjQzOCIKICAgICAgICBmb250LWZhbWlseT0iJ0RlamFWdSBTYW5zJywgQXJpYWwsIHNhbnMtc2VyaWYiCiAgICAgICAgZm9udC13ZWlnaHQ9IjQwMCIKICAgICAgICBmb250LXNpemU9IjgwIgogICAgICAgIGxldHRlci1zcGFjaW5nPSIyIgogICAgICAgIGZpbGw9IiNkOGUyZTgiPkdtYkg8L3RleHQ+Cjwvc3ZnPgo=">
+ <h1>ReNew IT GmbH – Prüfstraße: Simulation</h1>
+</header>
+<main>
+ <div class="wrap">
+  <canvas id="c" width="1000" height="470"></canvas>
+  <div class="bar">
+   <button class="primary" id="btnRun" onclick="toggleRun()">&#10074;&#10074; Pause</button>
+   <button class="chip" id="sp1" onclick="setSpeed(1)">1&times;</button>
+   <button class="chip" id="sp2" onclick="setSpeed(2)">2&times;</button>
+   <button class="chip" id="sp10" onclick="setSpeed(10)">10&times;</button>
+   <button onclick="restart()">&#8635; Neustart</button>
+   <div class="stat">
+    <span class="s">Beobachten: Was passiert an jeder Station &#8211; und wonach wird am Ende sortiert?</span>
+   </div>
+  </div>
+ </div>
+</main>
+<script>
+"use strict";
+var cv = document.getElementById("c"), ctx = cv.getContext("2d");
+var W = 1000, H = 470;
+var DPR = Math.min(window.devicePixelRatio || 1, 2);
+cv.width = W * DPR; cv.height = H * DPR;
+ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+
+var TY = 268, FLOOR = 290;
+var BLAU_HELL = "#5FB8DC", ORANGE = "#E67E22", ZETTEL_BG = "#F2A03D";
+var V = 105;
+var STAT = [
+ {cx: 262, titel: "SICHTPRÜFUNG",      key: "crack", dwell: 1.9, gross: false},
+ {cx: 494, titel: "HARDWARE-DIAGNOSE", key: "diag",  dwell: 2.1, gross: true}
+];
+STAT.forEach(function(s){ s.busy = null; });
+var SORT_X = 650;
+var BINS = [
+ {x: 904, w: 70,  col: "#C0392B", name: "Verwertung",   n: 0, stack: []},
+ {x: 824, w: 70,  col: "#E6B800", name: "Aufbereitung", n: 0, stack: []},
+ {x: 706, w: 108, col: "#6B9F35", name: "Verkauf",      n: 0, stack: []}
+];
+var BIN_TOP = 352, BIN_H = 78, DROP = BIN_TOP + 30 - TY;
+var SLIDE = 130, HOVER = 0.75, SINK = 120;
+
+var run = true, speed = 1, tPrev = 0, spawnT = 0.4, total = 0, ph = 0;
+var devs = [], fx = [], sortBusy = false;
+
+var COLS = [
+ ["#9aa6ad","#77838a","#5c666c"],
+ ["#77848c","#5a666d","#49525a"],
+ ["#adb6ba","#8b959a","#6d767b"],
+ ["#6d7a84","#525d66","#424c54"]
+];
+function rnd(a, b){ return a + Math.random() * (b - a); }
+
+/* Startfolge (erste 20 Geräte): jeder Fall mind. 3× –
+   k = kein Befund (10×) · s = nur Sicht (4×) · d = nur Diagnose (3×) · b = beide (3×) */
+var START = "kskbdkskdkbkskdkbksk", spawnIdx = 0;
+function spawn(){
+ var t = spawnIdx < START.length ? START.charAt(spawnIdx) : null;
+ spawnIdx++;
+ devs.push({
+  x: -70, stn: 0, h: 0, mark: false,
+  crack: t ? (t === "s" || t === "b") : Math.random() < 0.22,
+  diag:  t ? (t === "d" || t === "b") : Math.random() < 0.08,
+  crackSeen: false, diagSeen: false,
+  col: COLS[Math.floor(Math.random() * COLS.length)],
+  crackY: rnd(0.2, 0.85), crackDir: Math.random() < 0.5 ? 1 : -1,
+  bin: -1, sortPh: 0, ht: 0, dy: 0, gone: false
+ });
+}
+
+/* ================= Simulation ================= */
+function step(dt){
+ ph += dt;
+ spawnT -= dt;
+ if (spawnT <= 0){ spawn(); spawnT = 4.0; }
+ var aheadX = 10000;
+ devs.forEach(function(o){
+  if (o.bin >= 0){                                    /* Sortieren: schweben, dann absenken */
+   var b = BINS[o.bin], bx = b.x + b.w / 2;
+   if (o.sortPh === 1){
+    o.x = Math.min(o.x + SLIDE * dt, bx);
+    if (o.x >= bx){ o.sortPh = 2; o.ht = HOVER; }
+   } else if (o.sortPh === 2){
+    o.ht -= dt;
+    if (o.ht <= 0){ o.sortPh = 3; o.dy = -8; }
+   } else {
+    o.dy += SINK * dt;
+    if (o.dy >= DROP){
+     o.gone = true; b.n++; total++; sortBusy = false;
+     b.stack.push({dx: rnd(-b.w * 0.22, b.w * 0.22), rot: rnd(-0.16, 0.16), col: o.col[1]});
+     if (b.stack.length > 9) b.stack.shift();
+     fx.push({x: bx, y: BIN_TOP + 26, r: 4, mr: 22, col: b.col, a: 0.8});
+     stat();
+    }
+   }
+   return;
+  }
+  var limit = aheadX - 76;
+  if (o.stn < 2){                                     /* Prüftische */
+   var st = STAT[o.stn], gateX = st.cx - 74;
+   if (st.busy === o){
+    if (o.x < st.cx){ o.x = Math.min(o.x + V * dt, st.cx); aheadX = o.x; return; }
+    o.h += dt;
+    if (!o.mark && o.h >= st.dwell - 0.45){
+     o.mark = true;
+     if (st.key === "crack" && o.crack){ o.crackSeen = true; fx.push({x: o.x - 12, y: TY - 74, r: 6, mr: 32, col: ORANGE, a: 0.9}); }
+     if (st.key === "diag" && o.diag){ o.diagSeen = true; fx.push({x: o.x + 12, y: TY - 74, r: 6, mr: 32, col: ORANGE, a: 0.9}); }
+    }
+    if (o.h >= st.dwell){ st.busy = null; o.stn++; o.h = 0; o.mark = false; }
+    aheadX = o.x;
+    return;
+   }
+   var nx = o.x + V * dt;
+   if (nx > limit) nx = Math.max(o.x, limit);
+   if (nx >= gateX){
+    nx = Math.min(nx, gateX);
+    if (st.busy === null){ st.busy = o; o.h = 0; }
+   }
+   o.x = nx; aheadX = o.x;
+   return;
+  }
+  var nx2 = o.x + V * dt;                             /* zur Sortierung */
+  if (nx2 > limit) nx2 = Math.max(o.x, limit);
+  if (nx2 >= SORT_X){
+   nx2 = Math.min(nx2, SORT_X);
+   if (!sortBusy){
+    sortBusy = true;
+    o.bin = (o.crack && o.diag) ? 0 : ((o.crack || o.diag) ? 1 : 2);
+    o.sortPh = 1; o.dy = 0;
+   }
+  }
+  o.x = nx2; aheadX = o.x;
+ });
+ devs = devs.filter(function(o){ return !o.gone; });
+ fx.forEach(function(f){ f.r += 70 * dt; f.a -= 1.8 * dt; });
+ fx = fx.filter(function(f){ return f.a > 0 && f.r < f.mr; });
+}
+
+/* ================= Zeichnen ================= */
+function hexA(hex, a){
+ var r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16);
+ return "rgba(" + r + "," + g + "," + b + "," + a + ")";
+}
+function roundRect(x, y, w, h, r){
+ ctx.beginPath();
+ ctx.moveTo(x + r, y);
+ ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+ ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r);
+ ctx.closePath();
+}
+function bg(){
+ var g = ctx.createLinearGradient(0, 0, 0, H);
+ g.addColorStop(0, "#0c2836"); g.addColorStop(0.60, "#123646"); g.addColorStop(0.61, "#1b303a"); g.addColorStop(1, "#141f26");
+ ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+ ctx.fillStyle = "rgba(160,205,225,0.07)";
+ for (var i = 0; i < 4; i++){ ctx.fillRect(60 + i * 250, 30, 130, 58); }
+ ctx.strokeStyle = "rgba(160,205,225,0.10)"; ctx.lineWidth = 3;
+ for (i = 0; i < 4; i++){ ctx.strokeRect(60 + i * 250, 30, 130, 58); ctx.beginPath(); ctx.moveTo(125 + i * 250, 30); ctx.lineTo(125 + i * 250, 88); ctx.stroke(); }
+ ctx.fillStyle = "rgba(255,255,255,0.05)"; ctx.fillRect(16, 122, 178, 32);
+ ctx.fillStyle = "rgba(216,226,232,0.55)"; ctx.font = "bold 15px Arial"; ctx.textAlign = "left";
+ ctx.fillText("WARENEINGANG", 32, 143);
+ ctx.fillStyle = "rgba(255,255,255,0.06)"; ctx.fillRect(0, FLOOR, 700, 2);
+ ctx.fillStyle = "rgba(255,255,255,0.03)"; ctx.fillRect(0, FLOOR + 2, 700, 26);
+ ctx.fillStyle = "rgba(216,226,232,0.4)"; ctx.font = "bold 12px Arial";
+ ctx.fillText("ANLIEFERUNG →", 10, FLOOR - 46);
+}
+function schild(st){
+ var w = 196, h = 30, y = 56;
+ ctx.strokeStyle = "rgba(255,255,255,0.15)"; ctx.lineWidth = 2;
+ ctx.beginPath();
+ ctx.moveTo(st.cx - w * 0.32, 0); ctx.lineTo(st.cx - w * 0.32, y);
+ ctx.moveTo(st.cx + w * 0.32, 0); ctx.lineTo(st.cx + w * 0.32, y);
+ ctx.stroke();
+ ctx.fillStyle = "#0e2530"; ctx.fillRect(st.cx - w / 2, y, w, h);
+ ctx.strokeStyle = "#2c5568"; ctx.strokeRect(st.cx - w / 2, y, w, h);
+ ctx.fillStyle = "#d8e2e8"; ctx.font = "bold 14px Arial"; ctx.textAlign = "center";
+ ctx.fillText(st.titel, st.cx, y + h / 2 + 5);
+}
+function tisch(cx){
+ ctx.fillStyle = "#33424c"; ctx.fillRect(cx - 52, TY + 2, 104, 10);
+ ctx.fillStyle = "rgba(255,255,255,0.08)"; ctx.fillRect(cx - 52, TY + 2, 104, 2);
+ ctx.fillStyle = "#26333b";
+ ctx.fillRect(cx - 46, TY + 12, 8, FLOOR - TY - 12);
+ ctx.fillRect(cx + 38, TY + 12, 8, FLOOR - TY - 12);
+}
+function tester(cx){
+ /* Diagnosegerät auf dem Tisch (Station 2) */
+ ctx.fillStyle = "#26333b"; roundRect(cx + 32, TY - 26, 38, 28, 3); ctx.fill();
+ ctx.strokeStyle = "rgba(255,255,255,0.10)"; ctx.lineWidth = 1.5;
+ roundRect(cx + 32, TY - 26, 38, 28, 3); ctx.stroke();
+ ctx.fillStyle = "#0d1a21"; ctx.fillRect(cx + 36, TY - 22, 30, 13);
+ ctx.fillStyle = "#3a4a55";
+ ctx.beginPath(); ctx.arc(cx + 42, TY - 4, 2.5, 0, 7); ctx.fill();
+ ctx.beginPath(); ctx.arc(cx + 52, TY - 4, 2.5, 0, 7); ctx.fill();
+ ctx.beginPath(); ctx.arc(cx + 62, TY - 4, 2.5, 0, 7); ctx.fill();
+}
+function person(x, aktiv){
+ var bob = aktiv ? Math.sin(ph * 5) * 1.5 : 0;
+ ctx.strokeStyle = "#22313a"; ctx.lineWidth = 7; ctx.lineCap = "round";
+ ctx.beginPath(); ctx.moveTo(x - 5, 252); ctx.lineTo(x - 7, FLOOR - 2); ctx.moveTo(x + 5, 252); ctx.lineTo(x + 8, FLOOR - 2); ctx.stroke();
+ ctx.fillStyle = "#0f6d94";
+ roundRect(x - 15, 208 + bob, 30, 48, 8); ctx.fill();
+ var ax = aktiv ? Math.sin(ph * 5) * 3 : 0;
+ ctx.strokeStyle = "#0f6d94"; ctx.lineWidth = 7;
+ ctx.beginPath(); ctx.moveTo(x + 12, 218 + bob);
+ ctx.quadraticCurveTo(x + 24, 228 + bob, x + 28 + ax, 240); ctx.stroke();
+ ctx.fillStyle = "#d9a679";
+ ctx.beginPath(); ctx.arc(x + 29 + ax, 242, 4.5, 0, 7); ctx.fill();
+ ctx.beginPath(); ctx.arc(x, 194 + bob, 11, 0, 7); ctx.fill();
+ ctx.fillStyle = "#3a3f43";
+ ctx.beginPath(); ctx.arc(x, 191 + bob, 11, Math.PI, 2 * Math.PI); ctx.fill();
+}
+function bins(){
+ ctx.textAlign = "center";
+ BINS.forEach(function(b){
+  ctx.fillStyle = "#101b21";
+  ctx.fillRect(b.x, BIN_TOP, b.w, BIN_H);
+  b.stack.forEach(function(s, i){
+   var sy = BIN_TOP + BIN_H - 8 - i * 7;
+   ctx.save(); ctx.translate(b.x + b.w / 2 + s.dx, sy); ctx.rotate(s.rot);
+   ctx.fillStyle = s.col; roundRect(-17, -4, 34, 7, 2); ctx.fill();
+   ctx.fillStyle = "rgba(255,255,255,0.12)"; ctx.fillRect(-17, -4, 34, 1.5);
+   ctx.restore();
+  });
+  ctx.strokeStyle = b.col; ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(b.x, BIN_TOP); ctx.lineTo(b.x, BIN_TOP + BIN_H); ctx.lineTo(b.x + b.w, BIN_TOP + BIN_H); ctx.lineTo(b.x + b.w, BIN_TOP);
+  ctx.stroke();
+  ctx.fillStyle = hexA(b.col, 0.13);
+  ctx.fillRect(b.x + 1.5, BIN_TOP + 26, b.w - 3, BIN_H - 26);
+  ctx.fillStyle = b.col; ctx.font = "bold 12.5px Arial";
+  ctx.fillText(b.name, b.x + b.w / 2, BIN_TOP + BIN_H + 18);
+  /* Kein Zaehler unter den Kisten (Fassung 6, 08.09.): nur der Prozess, keine Haeufigkeiten. */
+ });
+ ctx.fillStyle = "rgba(216,226,232,0.5)"; ctx.font = "bold 12px Arial";
+ ctx.fillText("SORTIERUNG", 830, 340);
+}
+function drawLaptop(o, x, yBase){
+ var c = o.col;
+ ctx.save();
+ ctx.translate(x, yBase);
+ ctx.fillStyle = "rgba(0,0,0,0.30)";
+ ctx.beginPath(); ctx.ellipse(0, 3, 30, 5, 0, 0, 7); ctx.fill();
+ var bg2 = ctx.createLinearGradient(0, -8, 0, 0);
+ bg2.addColorStop(0, c[0]); bg2.addColorStop(1, c[2]);
+ ctx.fillStyle = bg2;
+ ctx.beginPath();
+ ctx.moveTo(-26, -8); ctx.lineTo(22, -8); ctx.lineTo(27, 0); ctx.lineTo(-30, 0); ctx.closePath(); ctx.fill();
+ ctx.fillStyle = "rgba(0,0,0,0.22)";
+ for (var k = 0; k < 4; k++){ ctx.fillRect(-22 + k * 11, -6, 8, 1.6); }
+ /* Deckel – aufrecht */
+ var lg = ctx.createLinearGradient(0, -50, 0, -8);
+ lg.addColorStop(0, c[0]); lg.addColorStop(1, c[1]);
+ ctx.fillStyle = lg;
+ roundRect(-23, -50, 46, 42, 3); ctx.fill();
+ var s;
+ if (o.diagSeen){
+  s = ctx.createLinearGradient(0, -47, 0, -12);
+  s.addColorStop(0, "#7a3a08"); s.addColorStop(1, "#c9660f");
+ } else {
+  s = ctx.createLinearGradient(0, -47, 0, -12);
+  s.addColorStop(0, "#0d3a4d"); s.addColorStop(1, "#14556e");
+ }
+ ctx.fillStyle = s; ctx.fillRect(-19.5, -46.5, 39, 35);
+ if (o.diagSeen){
+  ctx.strokeStyle = "#ffe9d6"; ctx.lineWidth = 2.6;
+  ctx.beginPath(); ctx.moveTo(-7, -37); ctx.lineTo(7, -23); ctx.moveTo(7, -37); ctx.lineTo(-7, -23); ctx.stroke();
+ } else {
+  ctx.fillStyle = "rgba(190,235,255,0.55)";
+  ctx.fillRect(-15, -41, 22, 2); ctx.fillRect(-15, -35, 28, 2); ctx.fillRect(-15, -29, 16, 2);
+  ctx.fillStyle = "rgba(107,159,53,0.9)"; ctx.fillRect(-15, -21, 9, 2);
+ }
+ if (o.crack){
+  var cy = -48 + o.crackY * 34, d = o.crackDir;
+  ctx.lineCap = "round"; ctx.lineJoin = "round";
+  if (o.crackSeen){
+   ctx.strokeStyle = "rgba(230,126,34,0.35)"; ctx.lineWidth = 5;
+   ctx.beginPath(); ctx.moveTo(-23, cy); ctx.lineTo(12, cy + 3 * d); ctx.stroke();
+  }
+  ctx.strokeStyle = o.crackSeen ? ORANGE : "rgba(20,26,30,0.85)";
+  ctx.lineWidth = o.crackSeen ? 2.2 : 1.4;
+  ctx.beginPath();
+  ctx.moveTo(-23, cy); ctx.lineTo(-15, cy + 3 * d); ctx.lineTo(-9, cy - 2 * d);
+  ctx.lineTo(-2, cy + 4 * d); ctx.lineTo(5, cy + 1 * d); ctx.lineTo(12, cy + 3 * d);
+  ctx.stroke();
+ }
+ /* Notizzettel: links = Sichtprüfung, rechts = Diagnose */
+ if (o.crackSeen) zettel(-36, -18, "GEHÄUSE", -0.09);
+ if (o.diagSeen)  zettel(36, 18, "HARDWARE", 0.09);
+ ctx.restore();
+}
+function zettel(zx, anker, txt, rot){
+ ctx.strokeStyle = "rgba(242,160,61,0.75)"; ctx.lineWidth = 1.4;
+ ctx.beginPath(); ctx.moveTo(zx, -56); ctx.lineTo(anker, -50); ctx.stroke();
+ ctx.save();
+ ctx.translate(zx, -72); ctx.rotate(rot);
+ ctx.fillStyle = "rgba(0,0,0,0.25)";
+ roundRect(-19, -14, 40, 32, 2); ctx.fill();
+ ctx.fillStyle = ZETTEL_BG;
+ roundRect(-21, -16, 40, 32, 2); ctx.fill();
+ ctx.strokeStyle = "rgba(90,50,0,0.45)"; ctx.lineWidth = 1;
+ roundRect(-21, -16, 40, 32, 2); ctx.stroke();
+ ctx.fillStyle = "#3a2200"; ctx.textAlign = "center";
+ ctx.font = "bold 16px Arial"; ctx.fillText("!", -1, 2);
+ ctx.font = "bold 6.5px Arial"; ctx.fillText(txt, -1, 12);
+ ctx.restore();
+}
+function wagen(x){
+ ctx.fillStyle = "#3c4a53"; ctx.fillRect(x - 30, TY + 2, 60, 6);
+ ctx.fillStyle = "#26333b"; ctx.fillRect(x - 24, TY + 8, 4, 8); ctx.fillRect(x + 20, TY + 8, 4, 8);
+ [-20, 20].forEach(function(dx){
+  ctx.fillStyle = "#222c33";
+  ctx.beginPath(); ctx.arc(x + dx, TY + 18, 6, 0, 7); ctx.fill();
+  ctx.strokeStyle = "#55646d"; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.arc(x + dx, TY + 18, 6, 0, 7); ctx.stroke();
+  var a = x / 6;
+  ctx.beginPath(); ctx.moveTo(x + dx, TY + 18);
+  ctx.lineTo(x + dx + Math.cos(a) * 5, TY + 18 + Math.sin(a) * 5); ctx.stroke();
+ });
+}
+function auge(o){
+ /* Auge kreist um das Gerät (Station 1) */
+ var st = STAT[0], prog = Math.min(o.h / (st.dwell - 0.3), 1);
+ var mx = o.x, my = TY - 26;
+ /* dezente Bahn */
+ ctx.strokeStyle = "rgba(255,255,255,0.07)"; ctx.lineWidth = 1.5;
+ ctx.beginPath(); ctx.ellipse(mx, my, 62, 36, 0, 0, 7); ctx.stroke();
+ var th = -Math.PI / 2 + prog * Math.PI * 2;
+ var ex = mx + Math.cos(th) * 62, ey = my + Math.sin(th) * 36;
+ ctx.save(); ctx.translate(ex, ey);
+ ctx.fillStyle = "#f2f7f9";
+ ctx.beginPath(); ctx.ellipse(0, 0, 13, 8.5, 0, 0, 7); ctx.fill();
+ ctx.strokeStyle = "#0e2530"; ctx.lineWidth = 1.5;
+ ctx.beginPath(); ctx.ellipse(0, 0, 13, 8.5, 0, 0, 7); ctx.stroke();
+ var ang = Math.atan2(my - ey, mx - ex);
+ var ix = Math.cos(ang) * 3.5, iy = Math.sin(ang) * 2.4;
+ ctx.fillStyle = "#075A7B";
+ ctx.beginPath(); ctx.arc(ix, iy, 4.6, 0, 7); ctx.fill();
+ ctx.fillStyle = "#0d1a21";
+ ctx.beginPath(); ctx.arc(ix, iy, 2.1, 0, 7); ctx.fill();
+ ctx.fillStyle = "rgba(255,255,255,0.85)";
+ ctx.beginPath(); ctx.arc(ix - 1.4, iy - 1.2, 1, 0, 7); ctx.fill();
+ ctx.restore();
+}
+function diagnose(o){
+ /* Kabel + Prüfgerät zeigt Ergebnis (Station 2) */
+ var st = STAT[1], cx = st.cx;
+ var prog = o.h / st.dwell;
+ var plug = Math.min(prog / 0.18, 1);
+ var bx0 = cx + 34, by0 = TY - 10;
+ var px = o.x + 27, py = TY - 6;
+ var exN = bx0 + (px - bx0) * plug, eyN = by0 + (py - by0) * plug;
+ ctx.strokeStyle = "#8fa4ad"; ctx.lineWidth = 2.5; ctx.lineCap = "round";
+ ctx.beginPath(); ctx.moveTo(bx0, by0);
+ ctx.quadraticCurveTo((bx0 + exN) / 2, TY + 16, exN, eyN); ctx.stroke();
+ if (plug >= 1){
+  ctx.fillStyle = "#55646d"; ctx.fillRect(px - 2, py - 3, 5, 6);
+ }
+ /* Display des Prüfgeräts */
+ var sx = cx + 36, sy = TY - 22, sw = 30, sh = 13;
+ if (prog < 0.18){
+  ctx.fillStyle = "rgba(95,184,220,0.25)";
+  ctx.fillRect(sx, sy, sw * 0.15, sh);
+ } else if (o.h < st.dwell - 0.45){
+  var scan = (o.h - st.dwell * 0.18) / (st.dwell - 0.45 - st.dwell * 0.18);
+  ctx.fillStyle = "rgba(95,184,220,0.30)";
+  ctx.fillRect(sx, sy, sw * Math.min(scan, 1), sh);
+  ctx.strokeStyle = hexA(BLAU_HELL, 0.9); ctx.lineWidth = 1.5;
+  var lx = sx + sw * Math.min(scan, 1);
+  ctx.beginPath(); ctx.moveTo(lx, sy); ctx.lineTo(lx, sy + sh); ctx.stroke();
+ } else {
+  if (o.diag){
+   ctx.fillStyle = hexA(ORANGE, 0.55 + 0.3 * Math.sin(ph * 9));
+   ctx.fillRect(sx, sy, sw, sh);
+   ctx.fillStyle = "#fff"; ctx.font = "bold 11px Arial"; ctx.textAlign = "center";
+   ctx.fillText("!", sx + sw / 2, sy + 10.5);
+  } else {
+   ctx.fillStyle = "rgba(107,159,53,0.45)";
+   ctx.fillRect(sx, sy, sw, sh);
+   ctx.fillStyle = "#d9f0c2"; ctx.font = "bold 9px Arial"; ctx.textAlign = "center";
+   ctx.fillText("OK", sx + sw / 2, sy + 10);
+  }
+ }
+}
+function aufTisch(o){
+ if (o.bin >= 0) return false;
+ return Math.abs(o.x - STAT[0].cx) < 44 || Math.abs(o.x - STAT[1].cx) < 44;
+}
+function draw(){
+ bg();
+ bins();
+ person(STAT[0].cx - 96, STAT[0].busy !== null);
+ person(STAT[1].cx - 96, STAT[1].busy !== null);
+ person(SORT_X - 30, sortBusy);
+ tisch(STAT[0].cx);
+ tisch(STAT[1].cx);
+ tester(STAT[1].cx);
+ schild(STAT[0]);
+ schild(STAT[1]);
+ /* Geräte */
+ devs.forEach(function(o){
+  var y = TY;
+  if (o.bin >= 0){
+   if (o.sortPh === 2) y = TY - 8 + Math.sin(ph * 6) * 3;
+   else if (o.sortPh === 3) y = TY + o.dy;
+  } else if (!aufTisch(o)){
+   wagen(o.x);
+  }
+  drawLaptop(o, o.x, y);
+ });
+ /* Prüf-Effekte über den Geräten */
+ STAT.forEach(function(st, i){
+  var o = st.busy;
+  if (o && o.x >= st.cx){
+   if (i === 0) auge(o); else diagnose(o);
+  }
+ });
+ fx.forEach(function(f){
+  ctx.strokeStyle = hexA(f.col, Math.max(f.a, 0)); ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.arc(f.x, f.y, f.r, 0, 7); ctx.stroke();
+ });
+}
+
+/* ================= Rahmen ================= */
+function frame(now){
+ if (!tPrev) tPrev = now;
+ var dt = Math.min((now - tPrev) / 1000, 0.05) * speed;
+ tPrev = now;
+ if (run) step(dt);
+ draw();
+ requestAnimationFrame(frame);
+}
+function stat(){
+ /* Bewusst ohne Zaehler (Fassung 6, 08.09.): Die Stunde soll den PROZESS zeigen.
+    Ein mitlaufender Zaehler wuerde die Blitzfrage empirisch beantwortbar machen,
+    die Schueler koennten die Simulation bis 500 durchlaufen lassen. */
+}
+function toggleRun(){
+ run = !run;
+ document.getElementById("btnRun").innerHTML = run ? "&#10074;&#10074; Pause" : "&#9654; Start";
+}
+function setSpeed(s){
+ speed = s;
+ [1,2,10].forEach(function(k){ document.getElementById("sp" + k).className = "chip" + (k === s ? " active" : ""); });
+}
+function restart(){
+ devs = []; fx = []; total = 0; spawnT = 0.4; sortBusy = false; spawnIdx = 0;
+ BINS.forEach(function(b){ b.n = 0; b.stack = []; });
+ STAT.forEach(function(s){ s.busy = null; });
+ stat();
+ if (!run) toggleRun();
+}
+setSpeed(1);
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
